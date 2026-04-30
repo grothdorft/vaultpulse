@@ -1,0 +1,39 @@
+# vaultpulse example configuration
+# Copy this file to vaultpulse.yaml and adjust as needed.
+
+vault:
+  # Vault server address (required)
+  address: "http://127.0.0.1:8200"
+
+  # Vault token used to query lease information (required)
+  # Consider using VAULT_TOKEN env var or a dedicated policy.
+  token: "s.exampletoken"
+
+  # Optional namespace for Vault Enterprise
+  # namespace: "my-namespace"
+
+  # How often to poll Vault for lease status (default: 60s)
+  poll_interval: 60s
+
+alerts:
+  # Send a WARNING alert when a lease expires within this duration (default: 24h)
+  warn_before: 24h
+
+  # Send a CRITICAL alert when a lease expires within this duration (default: 1h)
+  crit_before: 1h
+
+webhooks:
+  # Slack incoming webhook example
+  - name: slack
+    url: "https://hooks.slack.com/services/T000/B000/xxxx"
+    timeout: 10s
+    headers:
+      Content-Type: "application/json"
+
+  # Generic HTTP endpoint example
+  - name: ops-receiver
+    url: "https://ops.example.com/alerts"
+    timeout: 5s
+    headers:
+      Authorization: "Bearer my-secret-token"
+      Content-Type: "application/json"
