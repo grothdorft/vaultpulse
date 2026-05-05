@@ -47,8 +47,14 @@ webhooks:
 	if cfg.Alerts.WarnBefore != 48*time.Hour {
 		t.Errorf("expected 48h warn_before, got %v", cfg.Alerts.WarnBefore)
 	}
+	if cfg.Alerts.CritBefore != 2*time.Hour {
+		t.Errorf("expected 2h crit_before, got %v", cfg.Alerts.CritBefore)
+	}
 	if len(cfg.Webhooks) != 1 || cfg.Webhooks[0].Name != "slack" {
 		t.Errorf("unexpected webhooks: %+v", cfg.Webhooks)
+	}
+	if cfg.Webhooks[0].Timeout != 5*time.Second {
+		t.Errorf("expected 5s webhook timeout, got %v", cfg.Webhooks[0].Timeout)
 	}
 }
 
@@ -107,5 +113,14 @@ func TestLoad_FileNotFound(t *testing.T) {
 	_, err := Load("/nonexistent/path/config.yaml")
 	if err == nil {
 		t.Fatal("expected error for missing file")
+	}
+}
+
+func TestLoad_InvalidYAML(t *testing.T) {
+	content := `vault: [invalid: yaml: content`
+	path := writeTempConfig(t, content)
+	_, err := Load(path)
+	if err == nil {
+		t.Fatal("expected error for invalid YAML, got nil")
 	}
 }
