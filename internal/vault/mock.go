@@ -1,11 +1,27 @@
 package vault
 
-// MockClient is a test double for vault.Client that returns predefined leases.
+import (
+	"context"
+)
+
+// MockClient is a test double for the VaultClient interface.
 type MockClient struct {
-	leases []Lease
+	Leases []Lease
+	Err    error
 }
 
-// NewMockClient creates a MockClient with the provided leases.
-func NewMockClient(leases []Lease) *Client {
-	return &Client{mock: &MockClient{leases: leases}}
+// NewMockClient returns a MockClient pre-loaded with the given leases.
+func NewMockClient(leases []Lease) *MockClient {
+	if leases == nil {
+		leases = []Lease{}
+	}
+	return &MockClient{Leases: leases}
+}
+
+// ListLeases returns the pre-configured leases or error.
+func (m *MockClient) ListLeases(ctx context.Context) ([]Lease, error) {
+	if m.Err != nil {
+		return nil, m.Err
+	}
+	return m.Leases, nil
 }

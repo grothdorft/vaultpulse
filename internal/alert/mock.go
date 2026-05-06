@@ -5,29 +5,33 @@ import (
 	"sync"
 )
 
-// Alerter is the interface implemented by all alert senders.
-type Alerter interface {
-	Send(ctx context.Context, p Payload) error
-}
-
-// MockAlerter records sent payloads and optionally returns a configured error.
+// MockAlerter is a test double for the Alerter interface.
 type MockAlerter struct {
 	mu       sync.Mutex
-	Payloads []Payload
+	Calls    []string
 	Err      error
+	CallCount int
 }
 
-// Send records the payload and returns the configured error (if any).
-func (m *MockAlerter) Send(_ context.Context, p Payload) error {
+// NewMockAlerter returns a new MockAlerter with no pre-configured error.
+func NewMockAlerter() *MockAlerter {
+	return &MockAlerter{}
+}
+
+// Send records the leaseID and returns the pre-configured error.
+func (m *MockAlerter) Send(ctx context.Context, leaseID string, ttl string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.Payloads = append(m.Payloads, p)
+	m.Calls = append(m.Calls, leaseID)
+	m.CallCount++
 	return m.Err
 }
 
-// Count returns the number of alerts sent.
-func (m *MockAlerter) Count() int {
+// Reset clears recorded calls and resets the call count.
+func (m *MockAlerter) Reset() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return len(m.Payloads)
+	m.Calls = nil
+	m.CallCount = 0
+	m.Err = nil
 }
