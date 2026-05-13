@@ -57,6 +57,14 @@ vaultpulse version    Print the current version
 | `check_interval` | How often to poll Vault for lease status | `5m` |
 | `alert_threshold` | How far before expiration to trigger an alert | `24h` |
 | `webhooks` | List of webhook targets for notifications | `[]` |
+| `leases` | List of Vault secret paths to monitor | `[]` |
+
+### Webhook Types
+
+| Type | Description |
+|---|---|
+| `slack` | Sends a formatted Slack message using Slack's incoming webhook schema |
+| `generic` | Sends a plain JSON POST request to any HTTP endpoint |
 
 ---
 
